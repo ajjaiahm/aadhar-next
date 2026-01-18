@@ -18,6 +18,11 @@ def liveness():
 
 @app.post("/dedupe-score")
 def dedupe():
+    score = round(random.uniform(0.0, 1.0), 2)
+
     return {
-        "match_score": round(random.uniform(0.0, 1.0), 2)
+        "match_score": score,
+        "potential_duplicate": score > 0.85,
+        "action": "HUMAN_REVIEW" if score > 0.85 else "NO_ACTION"
     }
+

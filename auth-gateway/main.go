@@ -5,9 +5,11 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"sync"
 	"time"
 )
 
+// datasturucttres
 type AuthRequest struct {
 	VID        string  `json:"vid"`
 	Confidence float64 `json:"confidence"`
@@ -18,31 +20,72 @@ type AuthResponse struct {
 	Status    string  `json:"status"`
 	RiskScore float64 `json:"risk_score"`
 	Action    string  `json:"action"`
+	Reason    string  `json:"reason"`
 }
 
+type AuthLog struct {
+	VID       string
+	Method    string
+	Timestamp time.Time
+}
+
+// in-memory log store
+var (
+	authLogs []AuthLog
+	lock     sync.Mutex
+)
+
+// helper funcs
+func logAuth(vid string, method string) {
+	lock.Lock()
+	defer lock.Unlock()
+
+	authLogs = append(authLogs, AuthLog{
+		VID:       vid,
+		Method:    method,
+		Timestamp: time.Now(),
+	})
+}
+
+// auth handler
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	var req AuthRequest
 	json.NewDecoder(r.Body).Decode(&req)
 
+	//log request
+	logAuth(req.VID, req.Method)
+
+	//base risk calculation
 	rand.Seed(time.Now().UnixNano())
 	risk := 1.0 - req.Confidence + rand.Float64()*0.2
 
 	action := "ALLOW"
-	if risk > 0.5 {
+	reason := "NORMAL"
+
+	//fraud+adaptive logic
+	if detectFraud(req.VID) {
+		action = "BLOCK"
+		reason = "FRAUD_SUSPECTED"
+	} else if risk > 0.5 {
 		action = "ESCALATE"
+		reason = "LOW_CONFIDENCE"
 	}
 
 	resp := AuthResponse{
 		Status:    "OK",
 		RiskScore: risk,
 		Action:    action,
+		Reason:    reason,
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 }
+
+//main
 
 func main() {
 	http.HandleFunc("/authenticate", authenticate)
 	log.Println("Auth Gateway running on :8080")
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
