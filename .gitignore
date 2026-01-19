@@ -1,0 +1,49 @@
+# ===============================
+# Python
+# ===============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.env
+.venv/
+venv/
+
+# ===============================
+# FastAPI / Uvicorn
+# ===============================
+*.log
+
+# ===============================
+# Data files (keep raw data out of git if needed)
+# Uncomment if UIDAI data should NOT be committed
+# data/aadhaar_enrolment/enrolment_raw.csv
+# data/aadhaar_enrolment/enrolment_cleaned.csv
+
+# ===============================
+# Node / Frontend (NOT USED NOW)
+# ===============================
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# If dashboard folder once used Node
+dashboard/node_modules/
+dashboard/package-lock.json
+
+# ===============================
+# OS / Editor
+# ===============================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ===============================
+# Git
+# ===============================
+*.orig
