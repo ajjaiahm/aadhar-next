@@ -110,18 +110,27 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func withCORS(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		h(w, r)
+	}
+}
+
 //main
 
 func main() {
-	http.HandleFunc("/authenticate", authenticate)
-
-	// new endpoints
-	http.HandleFunc("/explain", explainHandler)              // GET ?id=VID
-	http.HandleFunc("/fairness", fairnessHandler)            // GET ?group=method
-	http.HandleFunc("/cleanup/ghost-scan", ghostScanHandler) // POST
-
-	// debug/demo endpoint (optional)
-	http.HandleFunc("/debug/seed-ghost", seedGhostHandler) // GET/POST
+	http.HandleFunc("/authenticate", withCORS(authenticate))
+	http.HandleFunc("/explain", withCORS(explainHandler))
+	http.HandleFunc("/fairness", withCORS(fairnessHandler))
+	http.HandleFunc("/cleanup/ghost-scan", withCORS(ghostScanHandler))
+	http.HandleFunc("/debug/seed-ghost", withCORS(seedGhostHandler))
 
 	log.Println("Auth Gateway running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
