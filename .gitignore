@@ -1,5 +1,9 @@
 # ===============================
+<<<<<<< HEAD
 # Python
+=======
+# Python cache / build
+>>>>>>> origin/rohan-explain-fairness
 # ===============================
 __pycache__/
 *.py[cod]
@@ -7,16 +11,33 @@ __pycache__/
 *.pyd
 *.egg-info/
 .eggs/
+<<<<<<< HEAD
 .env
 .venv/
 venv/
 
 # ===============================
 # FastAPI / Uvicorn
+=======
+build/
+dist/
+
+# ===============================
+# Python virtual environments
+# ===============================
+.venv/
+venv/
+env/
+ENV/
+
+# ===============================
+# Logs
+>>>>>>> origin/rohan-explain-fairness
 # ===============================
 *.log
 
 # ===============================
+<<<<<<< HEAD
 # Data files (keep raw data out of git if needed)
 # Uncomment if UIDAI data should NOT be committed
 # data/aadhaar_enrolment/enrolment_raw.csv
@@ -32,11 +53,27 @@ yarn.lock
 pnpm-lock.yaml
 
 # If dashboard folder once used Node
+=======
+# Node / Frontend (NOT required in GitHub)
+# ===============================
+node_modules/
+**/node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+npm-debug.log*
+
+# Explicit dashboard ignores (your case)
+>>>>>>> origin/rohan-explain-fairness
 dashboard/node_modules/
 dashboard/package-lock.json
 
 # ===============================
+<<<<<<< HEAD
 # OS / Editor
+=======
+# OS / Editor files
+>>>>>>> origin/rohan-explain-fairness
 # ===============================
 .DS_Store
 Thumbs.db
@@ -44,6 +81,18 @@ Thumbs.db
 .idea/
 
 # ===============================
+<<<<<<< HEAD
+=======
+# Temporary / backup files
+# ===============================
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+
+# ===============================
+>>>>>>> origin/rohan-explain-fairness
 # Git
 # ===============================
 *.orig

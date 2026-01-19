@@ -9,6 +9,21 @@ import (
 	"time"
 )
 
+type DecisionRecord struct {
+	VID        string
+	Action     string
+	Reason     string
+	RiskScore  float64
+	Confidence float64
+	Method     string
+	Timestamp  time.Time
+}
+
+var (
+	lastDecision = map[string]DecisionRecord{}
+	dlock        sync.Mutex
+)
+
 // datasturucttres
 type AuthRequest struct {
 	VID        string  `json:"vid"`
@@ -80,12 +95,43 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
+
+	dlock.Lock()
+	lastDecision[req.VID] = DecisionRecord{
+		VID:        req.VID,
+		Action:     action,
+		Reason:     reason,
+		RiskScore:  risk,
+		Confidence: req.Confidence,
+		Method:     req.Method,
+		Timestamp:  time.Now(),
+	}
+	dlock.Unlock()
+
+}
+
+func withCORS(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		h(w, r)
+	}
 }
 
 //main
 
 func main() {
-	http.HandleFunc("/authenticate", authenticate)
+	http.HandleFunc("/authenticate", withCORS(authenticate))
+	http.HandleFunc("/explain", withCORS(explainHandler))
+	http.HandleFunc("/fairness", withCORS(fairnessHandler))
+	http.HandleFunc("/cleanup/ghost-scan", withCORS(ghostScanHandler))
+	http.HandleFunc("/debug/seed-ghost", withCORS(seedGhostHandler))
+
 	log.Println("Auth Gateway running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
