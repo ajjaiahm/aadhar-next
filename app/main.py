@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from app.demographic_updates.routes import router as demographic_router
+
 import pandas as pd
 from pathlib import Path
 
@@ -97,3 +99,8 @@ def enrolment_trends():
     )
 
     return trend_df.to_dict(orient="records")
+app.include_router(
+    demographic_router,
+    prefix="/demographic",
+    tags=["Aadhaar Demographic Updates"]
+)
