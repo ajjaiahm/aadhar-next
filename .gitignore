@@ -1,3 +1,60 @@
+# ===============================
+# Python cache / build
+# ===============================
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
+*.pyd
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# ===============================
+# Python virtual environments
+# ===============================
+.venv/
+venv/
+env/
+ENV/
+
+# ===============================
+# Logs
+# ===============================
+*.log
+
+# ===============================
+# Node / Frontend (NOT required in GitHub)
+# ===============================
+node_modules/
+**/node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+npm-debug.log*
+
+# Explicit dashboard ignores (your case)
+dashboard/node_modules/
+dashboard/package-lock.json
+
+# ===============================
+# OS / Editor files
+# ===============================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ===============================
+# Temporary / backup files
+# ===============================
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+
+# ===============================
+# Git
+# ===============================
+*.orig
