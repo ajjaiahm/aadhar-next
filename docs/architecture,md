@@ -1,12 +1,53 @@
-## Aadhaar-NEXT Architecture
 
-1. User interacts with Next.js frontend
-2. Authentication request sent to Go Auth Gateway
-3. Auth Gateway queries ML Engine for confidence
-4. Adaptive logic decides ALLOW or ESCALATE
-5. All events logged for fraud & fairness analysis
+---
 
-Privacy:
-- Virtual IDs only
-- No Aadhaar numbers
-- Synthetic biometric templates
+# docs/02_ARCHITECTURE.md
+
+```md
+# Architecture
+
+## High-Level Flow
+
+1) User interacts with Next.js dashboard UI
+2) UI calls Go Auth Gateway APIs (localhost:8080)
+3) Auth Gateway optionally calls ML Engine (localhost:8000) for quality/liveness confidence
+4) Auth Gateway applies adaptive rules:
+   - ALLOW
+   - ESCALATE (fallback to alternate auth)
+   - BLOCK (fraud suspected)
+5) Events are logged for:
+   - Explainability
+   - Fairness monitoring
+   - Ghost scan logic
+
+## Services
+
+### 1) Auth Gateway (Go)
+Responsibilities:
+- Authentication decision logic
+- Fraud detection rules (demo)
+- Explainability endpoint (decision + reasons)
+- Fairness aggregation by group
+- Ghost scan detection (inactive activity)
+
+### 2) ML Engine (Python FastAPI)
+Responsibilities:
+- Stubs for:
+  - liveness
+  - quality
+  - dedup similarity
+- Exposes Swagger docs for API testing
+
+### 3) Dashboard (Next.js + Chart.js)
+Responsibilities:
+- Provide demo UI
+- Visualize explainability reason weights
+- Visualize fairness rates
+- Run ghost scan + show table
+- (Planned) Visualize official datasets
+
+## Privacy Model
+- No real Aadhaar numbers
+- Virtual IDs (VID) used in demo APIs
+- Synthetic records only
+- Aggregated official datasets contain no personal identifiers

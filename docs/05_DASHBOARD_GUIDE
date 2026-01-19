@@ -1,0 +1,22 @@
+# Dashboard Guide
+
+Run dashboard:
+cd dashboard
+npm run dev
+
+Routes:
+- /auth: test auth API
+- /explain: view explainability output + chart
+- /fairness: fairness dashboard charts
+- /ghost: ghost scan + demo seed + table
+
+## Recommended Demo Flow
+1) /auth: run face low confidence → ESCALATE
+2) /explain: explain same VID → shows rule weights
+3) /fairness: run multiple methods → shows disparity chart
+4) /ghost: seed old VID → scan → flagged candidate appears
+
+Planned:
+- /enrolment (official dataset analytics)
+- /demographic (official dataset analytics)
+- /biometric (official dataset analytics)
