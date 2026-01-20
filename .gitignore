@@ -96,3 +96,7 @@ Thumbs.db
 # Git
 # ===============================
 *.orig
+
+# Next.js build/cache
+/dashboard/.next/
+/dashboard/node_modules/
