@@ -96,3 +96,6 @@ Thumbs.db
 # Git
 # ===============================
 *.orig
+dashboard/.next/
+dashboard/node_modules/
+dashboard/.env.local
