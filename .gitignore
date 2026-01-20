@@ -99,3 +99,7 @@ Thumbs.db
 dashboard/.next/
 dashboard/node_modules/
 dashboard/.env.local
+
+# Dashboard build/cache
+/dashboard/.next/
+/dashboard/node_modules/
