@@ -104,3 +104,13 @@ app.include_router(
     prefix="/demographic",
     tags=["Aadhaar Demographic Updates"]
 )
+@app.get("/biometric")
+def biometric_root():
+    return {
+        "message": "Biometric Analytics API is running"
+    }
+app.include_router(
+    demographic_router,
+    prefix="/biometric",
+    tags=["Biometric Analytics"]
+)
