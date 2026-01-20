@@ -1,21 +1,44 @@
 from fastapi import FastAPI, HTTPException
-from app.demographic_updates.routes import router as demographic_router
-
 import pandas as pd
 from pathlib import Path
 
-# --------------------------------------------------
-# App init
-# --------------------------------------------------
+# -----------------------------
+# Routers
+# -----------------------------
+from app.demographic_updates.routes import router as demographic_router
+from app.api.insight_bot import router as insight_bot_router
+
+# -----------------------------
+# App init (ONLY ONCE)
+# -----------------------------
 app = FastAPI(
-    title="Aadhaar Enrolment Analytics API",
-    description="Analytics on aggregated Aadhaar enrolment data (UIDAI)",
+    title="UIDAI Aadhaar Analytics Platform",
+    description="Aggregated enrolment, demographic & biometric insights",
     version="1.0.0"
 )
 
-# --------------------------------------------------
-# Load cleaned dataset
-# --------------------------------------------------
+# -----------------------------
+# Include routers
+# -----------------------------
+app.include_router(
+    insight_bot_router
+)
+
+app.include_router(
+    demographic_router,
+    prefix="/demographic",
+    tags=["Aadhaar Demographic Updates"]
+)
+
+app.include_router(
+    demographic_router,
+    prefix="/biometric",
+    tags=["Biometric Analytics"]
+)
+
+# -----------------------------
+# Load enrolment dataset
+# -----------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "data" / "aadhaar_enrolment" / "enrolment_cleaned.csv"
 
@@ -27,16 +50,13 @@ if not DATA_PATH.exists():
 
 df = pd.read_csv(DATA_PATH)
 
-# --------------------------------------------------
-# API Endpoints
-# --------------------------------------------------
+# -----------------------------
+# Core endpoints
+# -----------------------------
 
 @app.get("/")
 def root():
-    return {
-        "message": "Aadhaar Enrolment Analytics API is running"
-    }
-
+    return {"message": "UIDAI Aadhaar Analytics API is running"}
 
 @app.get("/enrolments/summary")
 def enrolment_summary():
@@ -46,7 +66,6 @@ def enrolment_summary():
         "records": len(df)
     }
 
-
 @app.get("/enrolments/age-wise")
 def age_wise_distribution():
     return {
@@ -55,11 +74,9 @@ def age_wise_distribution():
         "age_18_plus": int(df["age_18_plus"].sum())
     }
 
-
 @app.get("/enrolments/state/{state}")
 def enrolment_by_state(state: str):
     state_df = df[df["state"].str.lower() == state.lower()]
-
     if state_df.empty:
         raise HTTPException(status_code=404, detail="State not found")
 
@@ -72,11 +89,9 @@ def enrolment_by_state(state: str):
         "total_enrolments": total
     }
 
-
 @app.get("/enrolments/district/{district}")
 def enrolment_by_district(district: str):
     district_df = df[df["district"].str.lower() == district.lower()]
-
     if district_df.empty:
         raise HTTPException(status_code=404, detail="District not found")
 
@@ -89,7 +104,6 @@ def enrolment_by_district(district: str):
         "total_enrolments": total
     }
 
-
 @app.get("/enrolments/trends")
 def enrolment_trends():
     trend_df = (
@@ -97,20 +111,8 @@ def enrolment_trends():
         .sum()
         .reset_index()
     )
-
     return trend_df.to_dict(orient="records")
-app.include_router(
-    demographic_router,
-    prefix="/demographic",
-    tags=["Aadhaar Demographic Updates"]
-)
+
 @app.get("/biometric")
 def biometric_root():
-    return {
-        "message": "Biometric Analytics API is running"
-    }
-app.include_router(
-    demographic_router,
-    prefix="/biometric",
-    tags=["Biometric Analytics"]
-)
+    return {"message": "Biometric Analytics API is running"}
